@@ -7,7 +7,7 @@ module Allowance
     end
 
     def can?(verb, object = nil)
-      !permissions[[verb, object]].nil?
+      !@permissions[[verb, object]].nil?
 
       # if ![Symbol, Class].include?(args.last.class)
       #   thing = args.pop
@@ -24,13 +24,13 @@ module Allowance
     def can(verbs, objects = nil, scope = true, &blk)
       expand_permissions(verbs).each do |verb|
         [objects].flatten.each do |object|
-          permissions[[verb, object]] = scope  # TODO: add blk, too
+          @permissions[[verb, object]] = scope  # TODO: add blk, too
         end
       end
     end
 
     def scoped_model(verb, model)
-      if p = permissions[[verb, model]]
+      if p = @permissions[[verb, model]]
         if p.is_a?(Hash)
           model.where(p)
         elsif p.is_a?(Proc)
@@ -54,7 +54,5 @@ module Allowance
         end
       end.flatten
     end
-
-    attr_reader :permissions
   end
 end
