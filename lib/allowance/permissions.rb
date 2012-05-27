@@ -12,7 +12,7 @@ module Allowance
         args.push(thing.class)
       end
 
-      if (p = find_permission(*args)).present?
+      if (p = find_permission(*args))
         thing ? scoped_model(*args).find(:first, conditions: { id: thing.id }).present? : true
       else
         false
