@@ -39,13 +39,13 @@ module Allowance
     describe "#scoped_model" do
       it "should return a properly scoped model" do
         model = mock
-        model.should_receive(:some_scope).and_return(:scoped)
+        model.should_receive(:some_scope).and_return(scoped_model = mock)
 
         p = Permissions.new do
           can :view, model, -> { some_scope }
         end
 
-        p.scoped_model(:view, model).should == :scoped
+        p.scoped_model(:view, model).should == scoped_model
       end
     end
   end
