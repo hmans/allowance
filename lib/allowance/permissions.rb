@@ -7,18 +7,18 @@ module Allowance
     end
 
     def can?(verb, object = nil)
-      !@permissions[[verb, object]].nil?
+      return true if @permissions[[verb, object]]
 
-      # if ![Symbol, Class].include?(args.last.class)
-      #   thing = args.pop
-      #   args.push(thing.class)
-      # end
+      # If object is a resource instance, try its class
+      if object.class.respond_to?(:find)
+        if can?(verb, object.class)
+          # See if the object is part of the defined scope
+          return !scoped_model(verb, object.class).
+            find(:first, conditions: { id: object.id }).nil?
+        end
+      end
 
-      # if (p = find_permission(*args))
-      #   thing ? scoped_model(*args).find(:first, conditions: { id: thing.id }).present? : true
-      # else
-      #   false
-      # end
+      false
     end
 
     def can(verbs, objects = nil, scope = true, &blk)

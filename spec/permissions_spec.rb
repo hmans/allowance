@@ -36,7 +36,21 @@ module Allowance
       insist p.can?(:show, SomeClass)
     end
 
-    it "should verify permissions against model instances"
+    it "should verify permissions against model instances" do
+      model_class = Class.new
+      model_class.should_receive(:some_scope).and_return(model_class)
+
+      model_instance = model_class.new
+      model_instance.stub!(:id => 123)
+
+      model_class.should_receive(:find).and_return(model_instance)
+
+      p = Permissions.new do
+        can :view, model_class, -> { some_scope }
+      end
+
+      insist p.can?(:view, model_instance)
+    end
 
     describe "#scoped_model" do
       it "should allow scopes to be defined through lambdas" do
