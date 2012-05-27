@@ -55,11 +55,6 @@ module Allowance
       end.flatten
     end
 
-    def permission_identifier(verb, object)
-      raise "Can't use enumerables as verbs" if verb.is_a?(Enumerable)
-      [verb.to_sym, object].compact
-    end
-
     attr_reader :permissions
   end
 end
