@@ -54,7 +54,7 @@ module Allowance
       model_class.should_receive(:find).and_return(model_instance)
 
       p = Permissions.new do
-        can :view, model_class, -> { some_scope }
+        can :view, model_class, lambda { some_scope }
       end
 
       insist p.can?(:view, model_instance)
@@ -66,7 +66,7 @@ module Allowance
         model.should_receive(:some_scope).and_return(scoped_model = mock)
 
         p = Permissions.new do
-          can :view, model, -> { some_scope }
+          can :view, model, lambda { some_scope }
         end
 
         p.scoped_model(:view, model).should == scoped_model
