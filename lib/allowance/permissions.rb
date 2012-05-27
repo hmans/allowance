@@ -6,32 +6,31 @@ module Allowance
       instance_exec(context, &blk)
     end
 
-    def can?(*args)
-      if ![Symbol, Class].include?(args.last.class)
-        thing = args.pop
-        args.push(thing.class)
-      end
+    def can?(verb, object = nil)
+      !permissions[[verb, object]].nil?
 
-      if (p = find_permission(*args))
-        thing ? scoped_model(*args).find(:first, conditions: { id: thing.id }).present? : true
-      else
-        false
+      # if ![Symbol, Class].include?(args.last.class)
+      #   thing = args.pop
+      #   args.push(thing.class)
+      # end
+
+      # if (p = find_permission(*args))
+      #   thing ? scoped_model(*args).find(:first, conditions: { id: thing.id }).present? : true
+      # else
+      #   false
+      # end
+    end
+
+    def can(verbs, objects = nil, scope = true, &blk)
+      expand_permissions(verbs).each do |verb|
+        [objects].flatten.each do |object|
+          permissions[[verb, object]] = scope  # TODO: add blk, too
+        end
       end
     end
 
-    def can(*args)
-      options = args.pop if args.last.is_a?(Hash) || args.last.is_a?(Proc)
-      object  = args.pop unless args.last.is_a?(Symbol)
-
-      expand_permissions(args).each do |verb|
-        permissions[permission_identifier(verb, object)] ||= options || true
-      end
-    end
-
-    def scoped_model(*args)
-      model = args.last  # TODO: check that model is a class
-
-      if p = find_permission(*args)
+    def scoped_model(verb, model)
+      if p = permissions[[verb, model]]
         if p.is_a?(Hash)
           model.where(p)
         elsif p.is_a?(Proc)
@@ -42,17 +41,6 @@ module Allowance
       else
         model.where(false)
       end
-    end
-
-    def find_permission(*args)
-      object  = args.pop unless args.last.is_a?(Symbol)
-
-      args.flatten.each do |verb|
-        if p = permissions[permission_identifier(verb, object)]
-          return p
-        end
-      end
-      nil
     end
 
   private
