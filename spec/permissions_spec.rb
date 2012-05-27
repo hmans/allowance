@@ -24,7 +24,15 @@ module Allowance
       refuse p.can?(:update, SomeOtherClass)
     end
 
-    it "should run the permission definition block against the provided context"
+    it "should run the permission definition block against the provided context" do
+      skills = mock(:singing => :good)
+
+      p = Permissions.new(skills) do |skills|
+        can :sing if skills.singing == :good
+      end
+
+      insist p.can? :sing
+    end
 
     it "should expand :view to include :index and :show" do
       p = Permissions.new do
