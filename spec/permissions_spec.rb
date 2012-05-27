@@ -36,8 +36,10 @@ module Allowance
       insist p.can?(:show, SomeClass)
     end
 
+    it "should verify permissions against model instances"
+
     describe "#scoped_model" do
-      it "should return a properly scoped model" do
+      it "should allow scopes to be defined through lambdas" do
         model = mock
         model.should_receive(:some_scope).and_return(scoped_model = mock)
 
@@ -47,6 +49,8 @@ module Allowance
 
         p.scoped_model(:view, model).should == scoped_model
       end
+
+      it "should allow scopes to be defined through where conditions"
     end
   end
 end
