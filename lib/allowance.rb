@@ -1,5 +1,5 @@
-require "allowance/version"
+require 'allowance/version'
+require 'allowance/permissions'
 
 module Allowance
-  # Your code goes here...
 end

@@ -14,4 +14,6 @@ Gem::Specification.new do |gem|
   gem.name          = "allowance"
   gem.require_paths = ["lib"]
   gem.version       = Allowance::VERSION
+
+  gem.add_development_dependency 'rspec'
 end
