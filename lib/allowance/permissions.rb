@@ -1,6 +1,6 @@
 module Allowance
   class Permissions
-    def initialize(context, &blk)
+    def initialize(context = nil, &blk)
       @permissions = {}
       @context = context
       instance_exec(context, &blk)
