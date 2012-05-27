@@ -6,42 +6,26 @@ module Allowance
     SomeOtherClass = Class.new
 
     it "should allow simple permissions to be specified" do
-      p = Permissions.new do
-        can :moo
-      end
+      subject.moo!
 
-      insist p.can?(:moo)
-      refuse p.can?(:quack)
+      insist subject.moo?
+      refuse subject.quack?
     end
 
     it "should allow verbs and objects" do
-      p = Permissions.new do
-        can :update, SomeClass
-      end
+      subject.update! SomeClass
 
-      insist p.can?(:update, SomeClass)
-      refuse p.can?(:destroy, SomeClass)
-      refuse p.can?(:update, SomeOtherClass)
-    end
-
-    it "should run the permission definition block against the provided context" do
-      skills = mock(:singing => :good)
-
-      p = Permissions.new(skills) do |skills|
-        can :sing if skills.singing == :good
-      end
-
-      insist p.can? :sing
+      insist subject.update? SomeClass
+      refuse subject.destroy? SomeClass
+      refuse subject.update? SomeOtherClass
     end
 
     it "should expand :view to include :index and :show" do
-      p = Permissions.new do
-        can :view, SomeClass
-      end
+      subject.view! SomeClass
 
-      insist p.can?(:view, SomeClass)
-      insist p.can?(:index, SomeClass)
-      insist p.can?(:show, SomeClass)
+      insist subject.view? SomeClass
+      insist subject.index? SomeClass
+      insist subject.show? SomeClass
     end
 
     it "should verify permissions against model instances" do
@@ -53,11 +37,9 @@ module Allowance
 
       model_class.should_receive(:find).and_return(model_instance)
 
-      p = Permissions.new do
-        can :view, model_class, lambda { some_scope }
-      end
+      subject.view! model_class, lambda { some_scope }
 
-      insist p.can?(:view, model_instance)
+      insist subject.view? model_instance
     end
 
     describe "#scoped_model" do
@@ -65,22 +47,17 @@ module Allowance
         model = mock
         model.should_receive(:some_scope).and_return(scoped_model = mock)
 
-        p = Permissions.new do
-          can :view, model, lambda { some_scope }
-        end
-
-        p.scoped_model(:view, model).should == scoped_model
+        subject.view! model, lambda { some_scope }
+        subject.scoped_model(:view, model).should == scoped_model
       end
 
       it "should allow scopes to be defined through where conditions" do
         model = mock
         model.should_receive(:where).with(:awesome => true).and_return(scoped_model = mock)
 
-        p = Permissions.new do
-          can :view, model, :awesome => true
-        end
+        subject.view! model, :awesome => true
 
-        p.scoped_model(:view, model).should == scoped_model
+        subject.scoped_model(:view, model).should == scoped_model
       end
     end
   end

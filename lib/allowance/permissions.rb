@@ -3,15 +3,15 @@ module Allowance
     def initialize(context = nil, &blk)
       @permissions = {}
       @context = context
-      instance_exec(context, &blk)
+      instance_exec(context, &blk) if blk
     end
 
-    def can?(verb, object = nil)
+    def allowed?(verb, object = nil)
       return true if @permissions[[verb, object]]
 
       # If object is a resource instance, try its class
       if object.class.respond_to?(:find)
-        if can?(verb, object.class)
+        if allowed?(verb, object.class)
           # See if the object is part of the defined scope
           return !scoped_model(verb, object.class).
             find(:first, :conditions => { :id => object.id }).nil?
@@ -21,11 +21,21 @@ module Allowance
       false
     end
 
-    def can(verbs, objects = nil, scope = true, &blk)
+    def allow!(verbs, objects = nil, scope = true, &blk)
       expand_permissions(verbs).each do |verb|
         [objects].flatten.each do |object|
           @permissions[[verb, object]] = scope  # TODO: add blk, too
         end
+      end
+    end
+
+    def method_missing(name, *args, &blk)
+      if name.to_s =~ /(.+)!$/
+        allow!($1.to_sym, *args, &blk)
+      elsif name.to_s =~ /(.+)\?$/
+        allowed?($1.to_sym, *args, &blk)
+      else
+        super
       end
     end
 
