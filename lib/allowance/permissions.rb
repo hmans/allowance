@@ -34,7 +34,7 @@ module Allowance
         if p.is_a?(Hash)
           model.where(p)
         elsif p.is_a?(Proc)
-          (p.arity == 0 ? model.instance_exec(&p) : p.call(model))
+          model.instance_exec(&p)
         else
           model
         end
