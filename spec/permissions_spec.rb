@@ -23,5 +23,17 @@ module Allowance
       refuse p.can?(:destroy, SomeClass)
       refuse p.can?(:update, SomeOtherClass)
     end
+
+    it "should run the permission definition block against the provided context"
+
+    it "should expand :view to include :index and :show" do
+      p = Permissions.new do
+        can :view, SomeClass
+      end
+
+      insist p.can?(:view, SomeClass)
+      insist p.can?(:index, SomeClass)
+      insist p.can?(:show, SomeClass)
+    end
   end
 end
