@@ -1,9 +1,8 @@
 module Allowance
   class Permissions
-    def initialize(context = nil, &blk)
+    def initialize
       @permissions = {}
-      @context = context
-      instance_exec(context, &blk) if blk
+      yield(self) if block_given?
     end
 
     def allowed?(verb, object = nil)

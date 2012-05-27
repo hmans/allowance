@@ -12,6 +12,15 @@ module Allowance
       refuse subject.quack?
     end
 
+    it "should support a block-style initialization" do
+      p = Permissions.new do |can|
+        can.sing!
+      end
+
+      insist p.allowed? :sing
+      insist p.sing?
+    end
+
     it "should allow verbs and objects" do
       subject.update! SomeClass
 
