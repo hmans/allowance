@@ -35,5 +35,18 @@ module Allowance
       insist p.can?(:index, SomeClass)
       insist p.can?(:show, SomeClass)
     end
+
+    describe "#scoped_model" do
+      it "should return a properly scoped model" do
+        model = mock
+        model.should_receive(:some_scope).and_return(:scoped)
+
+        p = Permissions.new do
+          can :view, model, -> { some_scope }
+        end
+
+        p.scoped_model(:view, model).should == :scoped
+      end
+    end
   end
 end
