@@ -50,7 +50,16 @@ module Allowance
         p.scoped_model(:view, model).should == scoped_model
       end
 
-      it "should allow scopes to be defined through where conditions"
+      it "should allow scopes to be defined through where conditions" do
+        model = mock
+        model.should_receive(:where).with(awesome: true).and_return(scoped_model = mock)
+
+        p = Permissions.new do
+          can :view, model, awesome: true
+        end
+
+        p.scoped_model(:view, model).should == scoped_model
+      end
     end
   end
 end
