@@ -14,7 +14,7 @@ module Allowance
         if can?(verb, object.class)
           # See if the object is part of the defined scope
           return !scoped_model(verb, object.class).
-            find(:first, conditions: { id: object.id }).nil?
+            find(:first, :conditions => { :id => object.id }).nil?
         end
       end
 
