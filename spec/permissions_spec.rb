@@ -59,7 +59,7 @@ module Allowance
 
       model_class.should_receive(:find).and_return(model_instance)
 
-      subject.view! model_class, lambda { some_scope }
+      subject.view! model_class, lambda { |r| r.some_scope }
 
       insist subject.view? model_instance
     end
@@ -69,7 +69,7 @@ module Allowance
         model = mock
         model.should_receive(:some_scope).and_return(scoped_model = mock)
 
-        subject.view! model, lambda { some_scope }
+        subject.view! model, lambda { |r| r.some_scope }
         subject.scoped_model(:view, model).should == scoped_model
       end
 

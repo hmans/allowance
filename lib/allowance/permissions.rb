@@ -43,7 +43,7 @@ module Allowance
         if p.is_a?(Hash)
           model.where(p)
         elsif p.is_a?(Proc)
-          model.instance_exec(&p)
+          p.call(model)
         else
           model
         end
