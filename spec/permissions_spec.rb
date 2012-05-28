@@ -21,6 +21,19 @@ module Allowance
       insist p.sing?
     end
 
+    it "should not modify the block's scope" do
+      yup = true
+      nope = false
+
+      p = Permissions.new do |can|
+        can.sing!  if yup
+        can.dance! if nope
+      end
+
+      insist p.sing?
+      refuse p.dance?
+    end
+
     it "should allow verbs and objects" do
       subject.update! SomeClass
 
