@@ -5,7 +5,7 @@ in any framework or application.
 
 A simple Example:
 
-~~~ ruby
+``` ruby
 p = Allowance.define do |can|
   can.sing!
   can.play!
@@ -14,11 +14,11 @@ end
 p.sing?   # true
 p.play?   # true
 p.dance?  # false
-~~~
+```
 
 You can specify permissions on objects (and their classes), too:
 
-~~~ ruby
+``` ruby
 p = Allowance.define do |can|
   # Everyone can view posts that have been published
   can.view! Post, :published => true
@@ -32,17 +32,17 @@ p = Allowance.define do |can|
     can.delete! Post 
   end
 end
-~~~
+```
 
 Instead of condition hashes, you can specify lambdas. This is great for model
 classes that are ActiveModel based (eg. ActiveRecord, Mongoid etc.):
 
-~~~ ruby
+``` ruby
 p = Allowance.define do |can|
   # Everyone can view posts that have been published
   can.view! Post, lambda { |posts| posts.visible_posts }
 end
-~~~
+```
 
 More documentation coming up soon.
 
