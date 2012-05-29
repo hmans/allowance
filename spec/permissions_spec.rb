@@ -5,6 +5,14 @@ module Allowance
     SomeClass = Class.new
     SomeOtherClass = Class.new
 
+    it "should allow permissions to be specified and queried through its instance methods" do
+      subject.can! :sing
+      subject.allow! :dance
+
+      insist subject.can? :dance
+      insist subject.allowed? :sing
+    end
+
     it "should allow simple permissions to be specified" do
       subject.moo!
 

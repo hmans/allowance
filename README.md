@@ -59,15 +59,15 @@ gem 'allowance'
 
 ### Defining permissions
 
-Use `Allowance.define` to create a new permissions object, then use its `allow!`
-method to add permissions:
+Use `Allowance.define` to create a new permissions object, then use its `allow!` or `can!`
+methods to add permissions:
 
 ``` ruby
 p = Allowance.define
 p.allow! :sing
 ```
 
-Instead of using `allow!`, you can just name the permission directly:
+Instead of using `allow!` or `can!`, you can just name the permission directly:
 
 ``` ruby
 p.sing!
@@ -83,11 +83,12 @@ end
 
 ### Querying permissions
 
-Similar to how you define permissions, you can use the `allowed?` method, or
+Similar to how you define permissions, you can use the `allowed?` or `can?` methods, or
 query permissions directly by name. The following two lines are equivalent:
 
 ``` ruby
 p.allowed? :sing
+p.can? :sing
 p.sing?
 ```
 
