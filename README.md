@@ -46,13 +46,34 @@ p.scoped_model(:view, Article).all
 
 ## Installation
 
-Just like with most other gems, either install and `require` the gem manually,
-or add it to your project's Gemfile:
+### Requirements
+
+Allowance should work fine with Ruby 1.8.7, 1.9.2, 1.9.3 and respective JRuby versions. Please consult Allowance's [Travis status page](http://travis-ci.org/hmans/allowance) for details.
+
+[![Build Status](https://secure.travis-ci.org/hmans/allowance.png)](http://travis-ci.org/hmans/allowance)
+
+### Installing through Bundler
+
+Well, you've done this before, haven't you? Just add the `allowance` gem to your project's Gemfile:
 
 ``` ruby
 gem 'allowance'
 ```
 
+### Installing without Bundler
+
+Install using RubyGems:
+
+```
+gem install allowance
+```
+
+Then require it in your code:
+
+```
+require 'rubygems'
+require 'allowance'
+```
 
 
 ## Usage
