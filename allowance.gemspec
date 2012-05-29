@@ -6,7 +6,7 @@ Gem::Specification.new do |gem|
   gem.email         = ["hendrik@mans.de"]
   gem.description   = %q{A general-use permission management library with support for ActiveModel.}
   gem.summary       = %q{A general-use permission management library with support for ActiveModel.}
-  gem.homepage      = ""
+  gem.homepage      = "https://github.com/hmans/allowance"
 
   gem.files         = `git ls-files`.split($\)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
