@@ -1,13 +1,13 @@
 # Allowance
 
-Allowance is a general-use permission management library for Ruby.
+**Allowance is a general-use permission management library for Ruby.
 It's decidedly simple, highly flexible, and has out-of-the-box support
-for ActiveModel-compliant classes.
+for ActiveModel-compliant classes.**
 
-It was inspired by Ryan Bates' fantastic [cancan](https://github.com/ryanb/cancan) and, unlike most other gems
+It was inspired by Ryan Bates' fantastic Rails authorization plugin [cancan](https://github.com/ryanb/cancan) and, unlike most other gems
 of its kind, is not bound to a specific framework.
 
-### A simple Example:
+A simple Example:
 
 ``` ruby
 p = Allowance.define do |can|
@@ -42,14 +42,18 @@ p.scoped_model(:view, Article).all
 # -> Article.where(['published = ? OR author_id = ?', true, current_user.id]).all
 ```
 
+
+
 ## Installation
 
 Just like with most other gems, either install and `require` the gem manually,
-or add it to your Gemfile:
+or add it to your project's Gemfile:
 
 ``` ruby
 gem 'allowance'
 ```
+
+
 
 ## Usage
 
@@ -89,15 +93,76 @@ p.sing?
 
 ### One-dimensional permissions
 
-_TODO_
+Allowance lets you define simple, one-dimenstional permissions like this:
+
+``` ruby
+p = Allowance.define do |allow|
+  allow.sing!
+  allow.play!
+  allow.dance! if current_user.can_dance?
+end
+```
 
 ### Two-dimensional permissions
 
-_TODO_
+Most of the time, you will be using two-dimensional permissions, consisting of a
+_verb_ and an _object_, with the object typically being some kind of model class.
+For example:
+
+``` ruby
+p = Allowance.define do |allow|
+  allow.view! Article
+
+  if current_user.is_admin?
+    allow.edit! Article
+  end
+end
+```
+
+When querying for permissions, just pass an object as an additional parameter:
+
+``` ruby
+p.edit? Article
+```
+
+When you pass a class instance (instead of a class), Allowance will check for
+the permission defined for its class, so the following will work, too:
+
+``` ruby
+p.edit? @article
+```
+
+Allowance will even allow you to define permissions in specific objects -- this is not recommended, though, since permission objects defined through Allowance only exist in memory; if you need to control permissions on individual model objects, you'll be better off with another authorization library, ideally one that stores its permissions in your datastore.
+
 
 ### Defining model scopes
 
-_TODO_
+For classes implementing ActiveModel (eg. ActiveRecord, Mongoid and others), Allowance allows you to restrict certain permissions to specific scopes. For example, if, in  a web application, a user should only be able to see articles that have been published, but admin users can see everything, you can define the permissions like this:
+
+``` ruby
+p = Allowance.define do |allow|
+  allow.view! Article, :published => true
+
+  if current_user.is_admin?
+    allow.view! Article
+  end
+end
+```
+
+You can see here that when a specific permission (for a _verb_ and _object_ combination) is defined more than once, the last definition will overwrite all those that came before it.
+
+In the example above, we defined the scope as a so-called "where conditions hash", ie. a hash passed to the model class' `.where` method. Since the hash notation assumes a logical AND and isn't all that flexible overall, you can also use the same string/array syntax you know from ActiveModel:
+
+``` ruby
+p.view! Article, ['published = ? OR user_id = ?', true, current_user.id]
+```
+
+Lastly, you're encouraged to re-use scopes defined on the model class. Just define your scope using a lambda:
+
+``` ruby
+p.view! Article, lambda { |r| r.viewable_by(current_user) }
+```
+
 
 ### Defining contextual permissions
 
