@@ -1,55 +1,130 @@
 # Allowance
 
-Allowance is a general-use permission management library that can be used
-in any framework or application.
+Allowance is a general-use permission management library for Ruby.
+It's decidedly simple, highly flexible, and has out-of-the-box support
+for ActiveModel-compliant classes.
 
-A very, very simple Example:
+It was inspired by Ryan Bates' fantastic [cancan](https://github.com/ryanb/cancan) and, unlike most other gems
+of its kind, is not bound to a specific framework.
 
-    p = Allowance.define do |can|
-      can.sing!
-      can.play!
-    end
+### A simple Example:
 
-    p.sing?   # true
-    p.play?   # true
-    p.dance?  # false
+``` ruby
+p = Allowance.define do |can|
+  # Allow logging in
+  can.login!
 
-You can specify permissions on objects (and their classes), too:
+  # Allow creating new Article instances
+  can.create! Article
 
-    p = Allowance.define do |can|
-      # Everyone can view posts that have been published
-      can.view! Post, :published => true
+  # Allow the user to edit Article instances that belong to him
+  can.edit! Article, :author_id => current_user.id
 
-      # Post owners can delete their own posts
-      can.delete! Post, :user_id => current_user.id
+  # Allow viewing all Article instances that are published or the user's
+  can.read! Article, ['published = ? OR author_id = ?', true, current_user.id]
+end
+```
 
-      # Admin users can view and delete all posts
-      if current_user.admin?
-        can.view! Post
-        can.delete! Post 
-      end
-    end
+Allowance parses these permission definitions and stores them in the object the
+`Allowance.define` call returns. It is now up to you to query that object where
+necessary. Some examples:
 
-Instead of condition hashes, you can specify lambdas. This is great for model
-classes that are ActiveModel based (eg. ActiveRecord, Mongoid etc.):
+``` ruby
+p.login?            # true
+p.create? Article   # true
+p.read? @article    # true or false, depending on state of @article
+```
 
-    p = Allowance.define do |can|
-      # Everyone can view posts that have been published
-      can.view! Post, lambda { |posts| posts.visible_posts }
-    end
+You can use the same object to provide you with correctly scoped models, too:
 
-More documentation coming up soon.
+``` ruby
+p.scoped_model(:view, Article).all
+# -> Article.where(['published = ? OR author_id = ?', true, current_user.id]).all
+```
 
 ## Installation
 
 Just like with most other gems, either install and `require` the gem manually,
 or add it to your Gemfile:
 
-    gem 'allowance'
+``` ruby
+gem 'allowance'
+```
 
 ## Usage
 
-TODO: Write usage instructions here
+### Defining permissions
+
+Use `Allowance.define` to create a new permissions object, then use its `allow!`
+method to add permissions:
+
+``` ruby
+p = Allowance.define
+p.allow! :sing
+```
+
+Instead of using `allow!`, you can just name the permission directly:
+
+``` ruby
+p.sing!
+```
+
+You can also specify permissions as a block:
+
+``` ruby
+p = Allowance.define do |allow|
+  allow.sing!
+end
+```
+
+### Querying permissions
+
+Similar to how you define permissions, you can use the `allowed?` method, or
+query permissions directly by name. The following two lines are equivalent:
+
+``` ruby
+p.allowed? :sing
+p.sing?
+```
+
+### One-dimensional permissions
+
+_TODO_
+
+### Two-dimensional permissions
+
+_TODO_
+
+### Defining model scopes
+
+_TODO_
+
+### Defining contextual permissions
+
+Since permissions are just Ruby code, you can use all your favorite language
+constructs when defining permissions. For example, in a web application
+providing a `current_user` method, you can do the following:
+
+``` ruby
+permissions = Allowance.define do |allow|
+  allow.read! Article
+
+  if current_user.is_admin?
+    allow.destroy! Article
+  end
+end
+```
+
+You can then query this permission like you'd expect:
+
+``` ruby
+@article = Article.find(params[:id])
+if permissions.destroy? @article
+  @article.destroy
+else
+  raise "You're not allowed to do this"
+end
+```
 
 ## Contributing
 
@@ -61,7 +136,7 @@ with me first in order to avoid disappointment.
 
 ## License
 
-Copyright (c) 2012 Hendrik Mans
+Copyright (c) 2012 Hendrik Mans <hendrik@mans.de>
 
 MIT License
 
