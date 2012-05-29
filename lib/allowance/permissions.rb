@@ -44,12 +44,10 @@ module Allowance
 
     def scoped_model(verb, model)
       if p = @permissions[[verb, model]]
-        if p.is_a?(Hash)
-          model.where(p)
-        elsif p.is_a?(Proc)
-          p.call(model)
-        else
-          model
+        case p
+          when Hash, String, Array then model.where(p)
+          when Proc then p.call(model)
+          else model
         end
       else
         model.where(false)

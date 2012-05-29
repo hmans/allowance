@@ -81,11 +81,29 @@ module Allowance
         subject.scoped_model(:view, model).should == scoped_model
       end
 
-      it "should allow scopes to be defined through where conditions" do
+      it "should allow scopes to be defined through a conditions hash" do
         model = mock
         model.should_receive(:where).with(:awesome => true).and_return(scoped_model = mock)
 
         subject.view! model, :awesome => true
+
+        subject.scoped_model(:view, model).should == scoped_model
+      end
+
+      it "should allow scopes to be defined through a conditions string" do
+        model = mock
+        model.should_receive(:where).with("awesome = true").and_return(scoped_model = mock)
+
+        subject.view! model, "awesome = true"
+
+        subject.scoped_model(:view, model).should == scoped_model
+      end
+
+      it "should allow scopes to be defined through a conditions array" do
+        model = mock
+        model.should_receive(:where).with(["awesome = ?", true]).and_return(scoped_model = mock)
+
+        subject.view! model, ["awesome = ?", true]
 
         subject.scoped_model(:view, model).should == scoped_model
       end
