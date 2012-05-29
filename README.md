@@ -185,6 +185,11 @@ Lastly, you're encouraged to re-use scopes defined on the model class. Just defi
 p.view! Article, lambda { |r| r.viewable_by(current_user) }
 ```
 
+Not only can use check permissions against those scopes, but you can also use the `#scoped_model` method to retreive a correctly scoped model according to its previous scope definition. For example:
+
+``` ruby
+@articles = p.scoped_model(:view, Article).order('created_at DESC').all
+```
 
 ### Defining contextual permissions
 
