@@ -4,8 +4,8 @@ require File.expand_path('../lib/allowance/version', __FILE__)
 Gem::Specification.new do |gem|
   gem.authors       = ["Hendrik Mans"]
   gem.email         = ["hendrik@mans.de"]
-  gem.description   = %q{A generic, but decidedly awesome authorization control layer.}
-  gem.summary       = %q{A generic, but decidedly awesome authorization control layer.}
+  gem.description   = %q{A general-use permission management library with support for ActiveModel.}
+  gem.summary       = %q{A general-use permission management library with support for ActiveModel.}
   gem.homepage      = ""
 
   gem.files         = `git ls-files`.split($\)
