@@ -60,7 +60,9 @@ module Allowance
       permissions.flatten.map do |p|
         case p
           when :manage then [:manage, :index, :show, :new, :create, :edit, :update, :destroy]
-          when :view   then [:view, :index, :show]
+          when :create then [:create, :new]
+          when :read   then [:read, :index, :show]
+          when :update then [:update, :edit]
           else p
         end
       end.flatten
