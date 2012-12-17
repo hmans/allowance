@@ -13,8 +13,7 @@ module Allowance
       if object.class.respond_to?(:model_name)
         if allowed?(verb, object.class)
           # See if the object is part of the defined scope.
-          return scoped_model(verb, object.class).
-            where(id: object.id).count > 0
+          return scoped_model(verb, object.class).exists?(object)
         end
       end
 

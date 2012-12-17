@@ -66,11 +66,7 @@ module Allowance
       model_instance = model_class.new
       model_instance.stub!(:id => 123)
 
-      count_double = double("count")
-      count_double.should_receive(:count).and_return(1)
-      model_class.should_receive(:where).
-        with(id: 123).
-        and_return(count_double)
+      model_class.should_receive(:exists?).with(model_instance).and_return(true)
 
       subject.read! model_class, lambda { |r| r.some_scope }
 
