@@ -60,16 +60,21 @@ module Allowance
 
     it "should verify permissions against model instances" do
       model_class = Class.new
+      model_class.stub(model_name: 'Model')
       model_class.should_receive(:some_scope).and_return(model_class)
 
       model_instance = model_class.new
       model_instance.stub!(:id => 123)
 
-      model_class.should_receive(:find).and_return(model_instance)
+      count_double = double("count")
+      count_double.should_receive(:count).and_return(1)
+      model_class.should_receive(:where).
+        with(id: 123).
+        and_return(count_double)
 
-      subject.view! model_class, lambda { |r| r.some_scope }
+      subject.read! model_class, lambda { |r| r.some_scope }
 
-      insist subject.view? model_instance
+      insist subject.read? model_instance
     end
 
     describe "#scoped_model" do

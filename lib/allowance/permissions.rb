@@ -6,17 +6,19 @@ module Allowance
     end
 
     def allowed?(verb, object = nil)
+      # Allow access if there is a direct match in permissions.
       return true if @permissions[[verb, object]]
 
-      # If object is a resource instance, try its class
-      if object.class.respond_to?(:find)
+      # If object is a resource instance, try its class.
+      if object.class.respond_to?(:model_name)
         if allowed?(verb, object.class)
-          # See if the object is part of the defined scope
-          return !scoped_model(verb, object.class).
-            find(:first, :conditions => { :id => object.id }).nil?
+          # See if the object is part of the defined scope.
+          return scoped_model(verb, object.class).
+            where(id: object.id).count > 0
         end
       end
 
+      # Once we get here, access can't be granted.
       false
     end
 
