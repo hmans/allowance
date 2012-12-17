@@ -50,10 +50,10 @@ module Allowance
       refuse subject.update? SomeOtherClass
     end
 
-    it "should expand :view to include :index and :show" do
-      subject.view! SomeClass
+    it "should expand :read to include :index and :show" do
+      subject.read! SomeClass
 
-      insist subject.view? SomeClass
+      insist subject.read? SomeClass
       insist subject.index? SomeClass
       insist subject.show? SomeClass
     end
