@@ -23,7 +23,7 @@ module Allowance
 
     alias_method :can?, :allowed?
 
-    def allow!(verbs, objects = nil, scope = true, &blk)
+    def allow(verbs, objects = nil, scope = true, &blk)
       expand_permissions(verbs).each do |verb|
         [objects].flatten.each do |object|
           @permissions[[verb, object]] = scope  # TODO: add blk, too
@@ -31,17 +31,7 @@ module Allowance
       end
     end
 
-    alias_method :can!, :allow!
-
-    def method_missing(name, *args, &blk)
-      if name.to_s =~ /(.+)!$/
-        allow!($1.to_sym, *args, &blk)
-      elsif name.to_s =~ /(.+)\?$/
-        allowed?($1.to_sym, *args, &blk)
-      else
-        super
-      end
-    end
+    alias_method :can, :allow
 
     def scoped_model(verb, model)
       if p = @permissions[[verb, model]]

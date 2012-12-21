@@ -6,56 +6,48 @@ module Allowance
     SomeOtherClass = Class.new
 
     it "should allow permissions to be specified and queried through its instance methods" do
-      subject.can! :sing
-      subject.allow! :dance
+      subject.can :sing
+      subject.allow :dance
 
       insist subject.can? :dance
       insist subject.allowed? :sing
     end
 
-    it "should allow simple permissions to be specified" do
-      subject.moo!
-
-      insist subject.moo?
-      refuse subject.quack?
-    end
-
     it "should support a block-style initialization" do
-      p = Permissions.new do |can|
-        can.sing!
+      p = Permissions.new do |p|
+        p.can :sing
       end
 
       insist p.allowed? :sing
-      insist p.sing?
     end
 
     it "should not modify the block's scope" do
       yup = true
       nope = false
 
-      p = Permissions.new do |can|
-        can.sing!  if yup
-        can.dance! if nope
+      p = Permissions.new do |p|
+        p.can :sing if yup
+        p.can :dance if nope
       end
 
-      insist p.sing?
-      refuse p.dance?
+      insist p.can? :sing
+      refuse p.can? :dance
     end
 
     it "should allow verbs and objects" do
-      subject.update! SomeClass
+      subject.can :update, SomeClass
 
-      insist subject.update? SomeClass
-      refuse subject.destroy? SomeClass
-      refuse subject.update? SomeOtherClass
+      insist subject.can? :update, SomeClass
+      refuse subject.can? :destroy, SomeClass
+      refuse subject.can? :update, SomeOtherClass
     end
 
     it "should expand :read to include :index and :show" do
-      subject.read! SomeClass
+      subject.can :read, SomeClass
 
-      insist subject.read? SomeClass
-      insist subject.index? SomeClass
-      insist subject.show? SomeClass
+      insist subject.can? :read, SomeClass
+      insist subject.can? :index, SomeClass
+      insist subject.can? :show, SomeClass
     end
 
     it "should verify permissions against model instances" do
@@ -68,9 +60,9 @@ module Allowance
 
       model_class.should_receive(:exists?).with(model_instance).and_return(true)
 
-      subject.read! model_class, lambda { |r| r.some_scope }
+      subject.can :read, model_class, lambda { |r| r.some_scope }
 
-      insist subject.read? model_instance
+      insist subject.can? :read, model_instance
     end
 
     describe "#scoped_model" do
@@ -78,7 +70,7 @@ module Allowance
         model = mock
         model.should_receive(:some_scope).and_return(scoped_model = mock)
 
-        subject.view! model, lambda { |r| r.some_scope }
+        subject.can :view, model, lambda { |r| r.some_scope }
         subject.scoped_model(:view, model).should == scoped_model
       end
 
@@ -86,7 +78,7 @@ module Allowance
         model = mock
         model.should_receive(:where).with(:awesome => true).and_return(scoped_model = mock)
 
-        subject.view! model, :awesome => true
+        subject.can :view, model, :awesome => true
 
         subject.scoped_model(:view, model).should == scoped_model
       end
@@ -95,7 +87,7 @@ module Allowance
         model = mock
         model.should_receive(:where).with("awesome = true").and_return(scoped_model = mock)
 
-        subject.view! model, "awesome = true"
+        subject.can :view, model, "awesome = true"
 
         subject.scoped_model(:view, model).should == scoped_model
       end
@@ -104,7 +96,7 @@ module Allowance
         model = mock
         model.should_receive(:where).with(["awesome = ?", true]).and_return(scoped_model = mock)
 
-        subject.view! model, ["awesome = ?", true]
+        subject.can :view, model, ["awesome = ?", true]
 
         subject.scoped_model(:view, model).should == scoped_model
       end
