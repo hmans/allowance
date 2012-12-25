@@ -48,7 +48,7 @@ module Allowance
         else model
       end
     else
-      model.where(false)
+      model.where('1=0')   # TODO: replace this with .none once available
     end
   end
 
