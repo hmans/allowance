@@ -11,21 +11,3 @@ end
 def refuse(what)
   what.should == false
 end
-
-# class User
-#   include Allowance
-
-#   attr_accessor :role
-
-#   def initialize(role = :standard)
-#     @role = role
-#   end
-
-#   def define_permissions
-#     allow :view
-
-#     if role == :admin
-#       allow :manage
-#     end
-#   end
-# end
