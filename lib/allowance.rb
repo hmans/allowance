@@ -45,7 +45,7 @@ module Allowance
       case p
         when Hash, String, Array then model.where(p)
         when Proc then p.call(model)
-        else model
+        else model.scoped
       end
     else
       model.where('1=0')   # TODO: replace this with .none once available
