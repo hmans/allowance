@@ -60,38 +60,35 @@ describe "a class with the Allowance mixin" do
   end
 
   describe "#allowed_scope" do
-    it "should allow scopes to be defined through lambdas" do
-      model = mock
-      model.should_receive(:some_scope).and_return(allowed_scope = mock)
+    let(:model) { double }
+    let(:allowed_scope) { double }
 
-      subject.allow :view, model, lambda { |r| r.some_scope }
+    it "allows scopes to be defined through lambdas" do
+      subject.allow :view, model, ->(m) { m.some_scope }
+      model.should_receive(:some_scope).and_return(allowed_scope)
       subject.allowed_scope(:view, model).should == allowed_scope
     end
 
-    it "should allow scopes to be defined through a conditions hash" do
-      model = mock
-      model.should_receive(:where).with(:awesome => true).and_return(allowed_scope = mock)
-
+    it "allows scopes to be defined through a conditions hash" do
       subject.allow :view, model, :awesome => true
-
+      model.should_receive(:where).with(:awesome => true).and_return(allowed_scope)
       subject.allowed_scope(:view, model).should == allowed_scope
     end
 
-    it "should allow scopes to be defined through a conditions string" do
-      model = mock
-      model.should_receive(:where).with("awesome = true").and_return(allowed_scope = mock)
-
+    it "allows scopes to be defined through a conditions string" do
       subject.allow :view, model, "awesome = true"
-
+      model.should_receive(:where).with("awesome = true").and_return(allowed_scope)
       subject.allowed_scope(:view, model).should == allowed_scope
     end
 
-    it "should allow scopes to be defined through a conditions array" do
-      model = mock
-      model.should_receive(:where).with(["awesome = ?", true]).and_return(allowed_scope = mock)
-
+    it "allow scopes to be defined through a conditions array" do
       subject.allow :view, model, ["awesome = ?", true]
+      model.should_receive(:where).with(["awesome = ?", true]).and_return(allowed_scope)
+      subject.allowed_scope(:view, model).should == allowed_scope
+    end
 
+    it "prevents access to models that have on permissions defined" do
+      model.should_receive(:where).with("1=0").and_return(allowed_scope)
       subject.allowed_scope(:view, model).should == allowed_scope
     end
   end
