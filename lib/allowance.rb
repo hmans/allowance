@@ -2,7 +2,12 @@ require 'allowance/version'
 
 module Allowance
   def permissions
-    @permissions ||= {}
+    unless @permissions_defined
+      define_permissions
+      @permissions_defined = true
+    end
+
+    @permissions || {}
   end
 
   def define_permissions
@@ -11,11 +16,6 @@ module Allowance
   end
 
   def allowed?(verb, object = nil)
-    unless @permissions_defined
-      define_permissions
-      @permissions_defined = true
-    end
-
     # Allow access if there is a direct match in permissions.
     return true if permissions[[verb, object]]
 
@@ -34,7 +34,8 @@ module Allowance
   def allow(verbs, objects = nil, scope = true, &blk)
     expand_permissions(verbs).each do |verb|
       [objects].flatten.each do |object|
-        permissions[[verb, object]] = scope  # TODO: add blk, too
+        @permissions ||= {}
+        @permissions[[verb, object]] = scope  # TODO: add blk, too
       end
     end
   end
