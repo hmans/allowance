@@ -6,7 +6,7 @@ module Allowance
 
     module ClassMethods
       def accessible_by(permissions, verb = :index)
-        permissions.scoped_model(verb, self)
+        permissions.allowed_scope(verb, self)
       end
     end
   end

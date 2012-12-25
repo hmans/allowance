@@ -1,17 +1,99 @@
 require 'spec_helper'
 
-module Allowance
-  describe "#define" do
-    it "should return an instance of Allowance::Permissions" do
-      Allowance.define.should be_kind_of(Allowance::Permissions)
+describe "a class with the Allowance mixin" do
+  let(:some_class) { Class.new }
+  let(:some_other_class) { Class.new }
+
+  subject do
+    Class.new do
+      include Allowance
+    end.new
+  end
+
+  it "has an #allow method that allows setting of permissions" do
+    subject.allow :read
+    insist subject.allowed? :read
+    refuse subject.allowed? :manage
+  end
+
+  it "automatically runs the #define_permissions method" do
+    subject.class.class_eval do
+      def define_permissions
+        allow :manage
+      end
     end
 
-    it "should make sure the passed block is executed" do
-      p = Allowance.define do |allow|
-        allow.allow :sing
-      end
+    insist subject.allowed? :manage
+  end
 
-      insist p.allowed? :sing
+  it "supports verbs and objects" do
+    subject.allow :update, some_class
+
+    insist subject.allowed? :update,  some_class
+    refuse subject.allowed? :destroy, some_class
+    refuse subject.allowed? :update,  some_other_class
+  end
+
+  describe 'verb expansion' do
+    it "expands :read to include :index and :show" do
+      subject.allow :read, some_class
+
+      insist subject.allowed? :read, some_class
+      insist subject.allowed? :index, some_class
+      insist subject.allowed? :show, some_class
     end
   end
+
+  it "should verify permissions against model instances" do
+    model_class = Class.new
+    model_class.stub(model_name: 'Model')
+    model_class.should_receive(:some_scope).and_return(model_class)
+
+    model_instance = model_class.new
+    model_instance.stub!(:id => 123)
+
+    model_class.should_receive(:exists?).with(model_instance).and_return(true)
+
+    subject.allow :read, model_class, lambda { |r| r.some_scope }
+
+    insist subject.allowed? :read, model_instance
+  end
+
+  describe "#allowed_scope" do
+    it "should allow scopes to be defined through lambdas" do
+      model = mock
+      model.should_receive(:some_scope).and_return(allowed_scope = mock)
+
+      subject.allow :view, model, lambda { |r| r.some_scope }
+      subject.allowed_scope(:view, model).should == allowed_scope
+    end
+
+    it "should allow scopes to be defined through a conditions hash" do
+      model = mock
+      model.should_receive(:where).with(:awesome => true).and_return(allowed_scope = mock)
+
+      subject.allow :view, model, :awesome => true
+
+      subject.allowed_scope(:view, model).should == allowed_scope
+    end
+
+    it "should allow scopes to be defined through a conditions string" do
+      model = mock
+      model.should_receive(:where).with("awesome = true").and_return(allowed_scope = mock)
+
+      subject.allow :view, model, "awesome = true"
+
+      subject.allowed_scope(:view, model).should == allowed_scope
+    end
+
+    it "should allow scopes to be defined through a conditions array" do
+      model = mock
+      model.should_receive(:where).with(["awesome = ?", true]).and_return(allowed_scope = mock)
+
+      subject.allow :view, model, ["awesome = ?", true]
+
+      subject.allowed_scope(:view, model).should == allowed_scope
+    end
+  end
+
 end
