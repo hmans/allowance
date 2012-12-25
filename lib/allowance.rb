@@ -23,7 +23,7 @@ module Allowance
     if object.class.respond_to?(:model_name)
       if allowed?(verb, object.class)
         # See if the object is part of the defined scope.
-        return allowed_scope(verb, object.class).exists?(object)
+        return allowed_scope(object.class, verb).exists?(object)
       end
     end
 
@@ -40,7 +40,9 @@ module Allowance
     end
   end
 
-  def allowed_scope(verb, model)
+  def allowed_scope(model, verb = nil)
+    verb ||= :read
+
     if p = permissions[[verb, model]]
       case p
         when Hash, String, Array then model.where(p)
