@@ -8,10 +8,10 @@ module Allowance
 
     it "should make sure the passed block is executed" do
       p = Allowance.define do |allow|
-        allow.can :sing
+        allow.allow :sing
       end
 
-      insist p.can? :sing
+      insist p.allowed? :sing
     end
   end
 end

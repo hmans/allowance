@@ -21,8 +21,6 @@ module Allowance
       false
     end
 
-    alias_method :can?, :allowed?
-
     def allow(verbs, objects = nil, scope = true, &blk)
       expand_permissions(verbs).each do |verb|
         [objects].flatten.each do |object|
@@ -30,8 +28,6 @@ module Allowance
         end
       end
     end
-
-    alias_method :can, :allow
 
     def scoped_model(verb, model)
       if p = @permissions[[verb, model]]
