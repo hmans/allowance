@@ -5,8 +5,8 @@ module Allowance
     end
 
     module ClassMethods
-      def accessible_by(permissions, verb = :index)
-        permissions.allowed_scope(verb, self)
+      def accessible_by(subject, verb = :index)
+        subject.allowed_scope(verb, self)
       end
     end
   end
