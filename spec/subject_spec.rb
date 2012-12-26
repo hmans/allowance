@@ -1,12 +1,12 @@
 require 'spec_helper'
 
-describe "a class with the Allowance mixin" do
+describe "a class with the Allowance::Subject mixin" do
   let(:some_class) { Class.new }
   let(:some_other_class) { Class.new }
 
   subject do
     Class.new do
-      include Allowance
+      include Allowance::Subject
     end.new
   end
 
