@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'ActiveRecord extensions' do
-  describe '#accessible_by' do
+  describe '#allowed' do
     pending
   end
 end

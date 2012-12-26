@@ -5,7 +5,7 @@ module Allowance
     end
 
     module ClassMethods
-      def accessible_by(subject, verb = nil)
+      def allowed(subject, verb = nil)
         subject.allowed_scope(self, verb)
       end
     end

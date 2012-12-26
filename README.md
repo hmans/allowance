@@ -175,7 +175,7 @@ In addition to that, the subject provides a method called `#allowed_scope` that 
 Allowance also add a similar class method to your ActiveRecord classes, so the following will work, too:
 
 ~~~ ruby
-@posts = Post.accessible_by(current_user, :read)
+@posts = Post.allowed(current_user, :read)
 ~~~
 
 This becomes handy in Rails controllers:
@@ -183,12 +183,12 @@ This becomes handy in Rails controllers:
 ~~~ ruby
 class PostsController < ApplicationController
   def index
-    @posts = Post.accessible_by(current_user, :index).all
+    @posts = Post.allowed(current_user, :index).all
     respond_with @posts
   end
 
   def show
-    @post = Post.accessible_by(current_user, :show).find(params[:id])
+    @post = Post.allowed(current_user, :show).find(params[:id])
     respond_with @post
   end
 
