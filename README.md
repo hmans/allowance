@@ -38,9 +38,9 @@ end
 
 ## Installation
 
-### Requirements
+Simply add `allowance` to your project's `Gemfile` or install it through `gem install allowance`.
 
-Allowance should work fine with Ruby 1.9.2, 1.9.3 and respective JRuby versions. Please consult Allowance's [Travis status page](http://travis-ci.org/hmans/allowance) for details.
+It should work fine with Ruby 1.9.2, 1.9.3 and respective JRuby versions. Please consult Allowance's [Travis status page](http://travis-ci.org/hmans/allowance) for details.
 
 [![Build Status](https://secure.travis-ci.org/hmans/allowance.png?branch=master)](http://travis-ci.org/hmans/allowance)
 
@@ -49,7 +49,7 @@ Allowance should work fine with Ruby 1.9.2, 1.9.3 and respective JRuby versions.
 
 ### Defining permissions
 
-Allowance generally thinks in terms of "subject", "verb" and, optionally, "object". For example, a _user_ (the subject) may be allowed to _edit_ (the verb) a _comment_ (the object). The object may be optional; for example, a _user_ may be able to _login_, and so on.
+Allowance generally thinks in terms of "subject", "verb" and, optionally, "object". For example, a _user_ (the subject) may be allowed to _edit_ (the verb) a _post_ (the object). The object may be optional; for example, a _user_ may be able to _login_, and so on.
 
 So, first of all, your application will need a subject. A subject can be any class that's using the `Allowance::Subject` mixin. In most applications, this will be your `User` class:
 
@@ -109,15 +109,23 @@ Now, assuming your application has a `current_user` controller and helper method
 
 ~~~ ruby
 class ApplicationController < ActionController::Base
-  helper_method :current_user
-
+  # Set up the current user. In this example, if a currently logged in
+  # user could not be found, we're creating (but not saving) a new
+  # instance representing a "guest" user.
+  # 
   def current_user
     @current_user ||= load_current_user || User.new
   end
 
+  # Make it available to your views, too.
+  #
+  helper_method :current_user
+
+  # Load the currently logged in user. This is just one of the many
+  # ways of doing it, so this may look different in your app.
+  #
   def load_current_user
     User.find(session[:current_user_id]) if session[:current_user_id]
-    # ...or whatever way of tracking the current user you prefer.
   end
 end
 ~~~  
@@ -148,7 +156,7 @@ allow :read, Post, ->(p) { p.where("published_at < ?", 2.weeks.ago) }
 
 When checking permissions against a model instance, Allowance will check if it's part of the allowed scope:
 
-~~~
+~~~ ruby
 # This will look up whatever scope is permitted for :read actions
 # on Post and will check whether the provided instance is inside
 # that scope (by running `scope.exists?(instance)`).
@@ -158,14 +166,32 @@ allowed?(:read, @post)
 
 In addition to that, the subject provides a method called `#allowed_scope` that returns the scope that is allowed for a certain verb and class:
 
-~~~
+~~~ ruby
 @posts = current_user.allowed_scope(Post, :read)
 ~~~
 
 Allowance also add a similar class method to your ActiveRecord classes, so the following will work, too:
 
-~~~
+~~~ ruby
 @posts = Post.accessible_by(current_user, :read)
+~~~
+
+This becomes handy in Rails controllers:
+
+~~~ ruby
+class PostsController < ApplicationController
+  def index
+    @posts = Post.accessible_by(current_user, :index).all
+    respond_with @posts
+  end
+
+  def show
+    @post = Post.accessible_by(current_user, :show).find(params[:id])
+    respond_with @post
+  end
+
+  # ...and so on.
+end
 ~~~
 
 
