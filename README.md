@@ -4,13 +4,15 @@
 It's decidedly simple, highly flexible, and has out-of-the-box support
 for ActiveRecord models.**
 
-It was inspired by Ryan Bates' fantastic Rails authorization plugin [CanCan](https://github.com/ryanb/cancan).
+Key features are:
 
 * Works great in any Ruby project, not just Rails.
 * It loves ActiveRecord scopes.
 * Very little code (under 100 lines).
 
-A simple example:
+Allowance was inspired by Ryan Bates' fantastic Rails authorization plugin [CanCan](https://github.com/ryanb/cancan).
+
+### A simple example:
 
 ~~~ ruby
 class User < ActiveRecord::Base
