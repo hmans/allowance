@@ -30,11 +30,11 @@ module Allowance
       false
     end
 
-    def allow(verbs, objects = nil, scope = true, &blk)
+    def allow(verbs, objects = nil, scope = true)
       expand_permissions(verbs).each do |verb|
         [objects].flatten.each do |object|
           @permissions ||= {}
-          @permissions[[verb, object]] = scope  # TODO: add blk, too
+          @permissions[[verb, object]] = scope
         end
       end
     end
