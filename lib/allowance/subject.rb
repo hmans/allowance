@@ -58,7 +58,7 @@ module Allowance
     def expand_permissions(*perms)
       perms.flatten.map do |p|
         case p
-          when :manage then [:manage, :index, :show, :new, :create, :edit, :update, :destroy]
+          when :manage then [:manage, :read, :update, :index, :show, :new, :create, :edit, :update, :destroy]
           when :create then [:create, :new]
           when :read   then [:read, :index, :show]
           when :update then [:update, :edit]
