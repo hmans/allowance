@@ -87,7 +87,7 @@ describe "a class with the Allowance::Subject mixin" do
       subject.allowed_scope(model, :read).should == allowed_scope
     end
 
-    it "prevents access to models that have on permissions defined" do
+    it "prevents access to models that have no permissions defined" do
       model.should_receive(:where).with("1=0").and_return(allowed_scope)
       subject.allowed_scope(model, :read).should == allowed_scope
     end
